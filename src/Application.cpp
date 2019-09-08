@@ -1,14 +1,17 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <sstream>
+
 #include "Renderer.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "Shader.h"
+#include "VertexBufferLayout.h"
 
 int main(void)
 {
@@ -71,26 +74,24 @@ int main(void)
 	shader->SetUniform4f("u_Colour", 0.8f, 0.3f, 0.8f, 1.f);
 
 	va->Unbind();
-	shader->Unbind();
 	va->Unbind();
 	ib->Unbind();
+	shader->Unbind();
 
-	float r = 0.05f, g = 0.05f, b = 0.05f;
+	Renderer renderer;
+
+	float r	 = 0.05f, g  = 0.05f, b = 0.05f;
 	float ri = 0.05f, gi = 0.1f, bi = 0.25f;
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
-		/* Render here */
-		glClear(GL_COLOR_BUFFER_BIT);
+		renderer.Clear();
 
 		shader->Bind();
 		shader->SetUniform4f("u_Colour", r, g, b, 1.f);
 
-		va->Bind();
-		ib->Bind();
-		
-		GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+		renderer.Draw(va, ib, shader);
 
 		if (r > 1.f || r < 0.f) ri *= -1;
 		if (g > 1.f || g < 0.f) gi *= -1;

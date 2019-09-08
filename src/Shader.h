@@ -3,11 +3,11 @@
 
 #include <string>
 #include <unordered_map>
-#include "GLFW/glfw3.h"
+
+typedef unsigned int GLuint;
 
 class Shader
 {
-
 private:
 	std::string m_FilePath;
 	GLuint m_RendererID;

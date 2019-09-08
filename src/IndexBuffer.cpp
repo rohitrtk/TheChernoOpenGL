@@ -1,4 +1,5 @@
 #include "IndexBuffer.h"
+
 #include "Renderer.h"
 
 IndexBuffer::IndexBuffer(const GLuint* data, GLuint count) :

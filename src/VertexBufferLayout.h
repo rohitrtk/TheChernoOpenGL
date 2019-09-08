@@ -2,8 +2,9 @@
 #define VERTEXBUFFERLAYOUT_H_
 
 #include <vector>
+
 #include "GLFW/glfw3.h"
-#include "GL/glew.h"
+
 #include "Renderer.h"
 
 struct VertexBufferElement
