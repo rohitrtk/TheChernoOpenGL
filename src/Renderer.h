@@ -1,7 +1,6 @@
 #ifndef RENDERER_H_
 #define RENDERER_H_
 
-
 #include <GL/glew.h>
 
 #define ASSERT(x) if(!(x)) __debugbreak()
