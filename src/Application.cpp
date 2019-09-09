@@ -78,7 +78,7 @@ int main(void)
 	shader->Bind();
 	shader->SetUniform4f("u_Colour", 0.8f, 0.3f, 0.8f, 1.f);
 
-	Texture* texture				= new Texture("res/textures/vine.png");
+	Texture* texture			= new Texture("res/textures/vine.png");
 	texture->Bind();
 	shader->SetUniform1i("u_Texture", 0);
 
@@ -122,6 +122,7 @@ int main(void)
 	delete ib;
 	delete layout;
 	delete shader;
+	delete texture;
 
 	glfwTerminate();
 	return 0;
