@@ -22,13 +22,15 @@ public:
 	void Unbind() const;
 
 	// Set uniforms
+	void SetUniform1i(const std::string& name, int x);
 	void SetUniform4f(const std::string& name, float x, float y, float z, float w);
 
 private:
 	struct ShaderProgramSource ParseShader(const std::string& filePath);
 	GLuint CreateShader(const std::string& vertexShader, const std::string& fragmentShader);
 	GLuint CompileShader(GLuint type, const std::string& source);
-	GLuint GetUniformLocation(const std::string& name);
+	
+	int GetUniformLocation(const std::string& name);
 };
 
 #endif

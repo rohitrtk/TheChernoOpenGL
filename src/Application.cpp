@@ -9,9 +9,10 @@
 #include "Renderer.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "VertexBufferLayout.h"
 #include "VertexArray.h"
 #include "Shader.h"
-#include "VertexBufferLayout.h"
+#include "Texture.h"
 
 int main(void)
 {
@@ -47,10 +48,10 @@ int main(void)
 	// Vertex positions of square
 	float positions[] =
 	{
-		-0.5f, -0.5f, // 0
-		 0.5f, -0.5f, // 1
-		 0.5f,  0.5f, // 2
-		-0.5f,  0.5f, // 3
+		-0.5f, -0.5f, 0.0f, 0.0f, // 0
+		 0.5f, -0.5f, 1.0f, 0.0f, // 1
+		 0.5f,  0.5f, 1.0f, 1.0f, // 2
+		-0.5f,  0.5f, 0.0f, 1.0f  // 3
 	};
 
 	// Index buffer object specifying which vertex positions
@@ -61,10 +62,14 @@ int main(void)
 		2, 3, 0
 	};
 
+	GLCall(glEnable(GL_BLEND));
+	GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
 	VertexArray* va				= new VertexArray();
-	VertexBuffer* vb			= new VertexBuffer(positions, 4 * 2 * sizeof(float));	
+	VertexBuffer* vb			= new VertexBuffer(positions, 4 * 4 * sizeof(float));	
 	VertexBufferLayout* layout	= new VertexBufferLayout();
 
+	layout->Push<float>(2);
 	layout->Push<float>(2);
 	va->AddBuffer(*vb, *layout);
 
@@ -72,6 +77,10 @@ int main(void)
 	Shader* shader				= new Shader("res/shaders/Basic.shader");
 	shader->Bind();
 	shader->SetUniform4f("u_Colour", 0.8f, 0.3f, 0.8f, 1.f);
+
+	Texture* texture				= new Texture("res/textures/vine.png");
+	texture->Bind();
+	shader->SetUniform1i("u_Texture", 0);
 
 	va->Unbind();
 	va->Unbind();
