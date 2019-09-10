@@ -19,6 +19,7 @@ class Renderer
 {
 public:
 	void Clear()																	const;
+	void SetClearColour(GLfloat r, GLfloat g, GLfloat b, GLfloat a = 1.f)			const;
 	void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader)	const;
 	void Draw(VertexArray* va, IndexBuffer* ib, Shader* shader)						const;
 };

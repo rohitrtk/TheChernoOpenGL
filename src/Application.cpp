@@ -14,6 +14,9 @@
 #include "Shader.h"
 #include "Texture.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 int main(void)
 {
 	GLFWwindow* window;
@@ -74,9 +77,13 @@ int main(void)
 	va->AddBuffer(*vb, *layout);
 
 	IndexBuffer* ib				= new IndexBuffer(indicies, 6);
+
+	glm::mat4 projection		= glm::ortho(-2.f ,2.f, -1.5f, 1.5f, -1.f, 1.f);
+
 	Shader* shader				= new Shader("res/shaders/Basic.shader");
 	shader->Bind();
 	shader->SetUniform4f("u_Colour", 0.8f, 0.3f, 0.8f, 1.f);
+	shader->SetUniformMat4f("u_MVP", projection);
 
 	Texture* texture			= new Texture("res/textures/vine.png");
 	texture->Bind();

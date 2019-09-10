@@ -4,6 +4,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "glm/glm.hpp"
+
 typedef unsigned int GLuint;
 
 class Shader
@@ -24,6 +26,7 @@ public:
 	// Set uniforms
 	void SetUniform1i(const std::string& name, int x);
 	void SetUniform4f(const std::string& name, float x, float y, float z, float w);
+	void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
 
 private:
 	struct ShaderProgramSource ParseShader(const std::string& filePath);
