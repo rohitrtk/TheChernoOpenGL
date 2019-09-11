@@ -17,6 +17,10 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+constexpr auto WindowTitle = "OpenGL Tutorials";
+constexpr auto WindowWidth  = 960.f;
+constexpr auto WindowHeight = 540.f;
+
 int main(void)
 {
 	GLFWwindow* window;
@@ -30,7 +34,7 @@ int main(void)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	/* Create a windowed mode window and its OpenGL context */
-	window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+	window = glfwCreateWindow(WindowWidth, WindowHeight, "Hello World", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
@@ -43,18 +47,20 @@ int main(void)
 
 	if (glewInit() != GLEW_OK)
 	{
-		std::cout << "Error initializing glew!";
+		std::cout << "Error initializing glew!" << std::endl;
+		return -1;
 	}
 
 	std::cout << glGetString(GL_VERSION) << "\n";
 
-	// Vertex positions of square
+	// Vertex positions
+	// Vertex coordinates & Texture coordinates
 	float positions[] =
 	{
-		-0.5f, -0.5f, 0.0f, 0.0f, // 0
-		 0.5f, -0.5f, 1.0f, 0.0f, // 1
-		 0.5f,  0.5f, 1.0f, 1.0f, // 2
-		-0.5f,  0.5f, 0.0f, 1.0f  // 3
+		100.f, 100.f, 0.0f, 0.0f, // 0
+		100.f, 200.f, 1.0f, 0.0f, // 1
+		200.f, 200.f, 1.0f, 1.0f, // 2
+		200.f, 100.f, 0.0f, 1.0f  // 3
 	};
 
 	// Index buffer object specifying which vertex positions
@@ -78,8 +84,8 @@ int main(void)
 
 	IndexBuffer* ib				= new IndexBuffer(indicies, 6);
 
-	glm::mat4 projection		= glm::ortho(-2.f ,2.f, -1.5f, 1.5f, -1.f, 1.f);
-
+	glm::mat4 projection		= glm::ortho(0.f, WindowWidth, 0.f, WindowHeight);
+	
 	Shader* shader				= new Shader("res/shaders/Basic.shader");
 	shader->Bind();
 	shader->SetUniform4f("u_Colour", 0.8f, 0.3f, 0.8f, 1.f);
@@ -94,33 +100,15 @@ int main(void)
 	ib->Unbind();
 	shader->Unbind();
 
-	Renderer renderer;
+	Renderer* renderer			= new Renderer();
 
-	float r	 = 0.05f, g  = 0.05f, b = 0.05f;
-	float ri = 0.05f, gi = 0.1f, bi = 0.25f;
-
-	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
-		renderer.Clear();
+		renderer->Clear();
 
-		shader->Bind();
-		shader->SetUniform4f("u_Colour", r, g, b, 1.f);
+		renderer->Draw(va, ib, shader);
 
-		renderer.Draw(va, ib, shader);
-
-		if (r > 1.f || r < 0.f) ri *= -1;
-		if (g > 1.f || g < 0.f) gi *= -1;
-		if (b > 1.f || b < 0.f) bi *= -1;
-
-		r += ri;
-		g += gi;
-		b += bi;
-
-		/* Swap front and back buffers */
 		glfwSwapBuffers(window);
-
-		/* Poll for and process events */
 		glfwPollEvents();
 	}
 
@@ -130,6 +118,7 @@ int main(void)
 	delete layout;
 	delete shader;
 	delete texture;
+	delete renderer;
 
 	glfwTerminate();
 	return 0;

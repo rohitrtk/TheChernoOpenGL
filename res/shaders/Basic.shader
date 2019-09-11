@@ -10,7 +10,7 @@ uniform mat4 u_MVP;
 
 void main()
 {
-	gl_Position = position * u_MVP;
+	gl_Position = u_MVP * position;
 	v_TexCoord = texCoord;
 }
 
@@ -21,11 +21,12 @@ layout(location = 0) out vec4 colour;
 
 in vec2 v_TexCoord;
 
-//uniform vec4 u_Colour;
+uniform vec4 u_Colour;
 uniform sampler2D u_Texture;
 
 void main()
 {
 	vec4 texColour = texture(u_Texture, v_TexCoord);
 	colour = texColour;
+	colour = vec4(1.0, 0.0, 1.0, 1.0);
 }
