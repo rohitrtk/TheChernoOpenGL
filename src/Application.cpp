@@ -58,9 +58,9 @@ int main(void)
 	float positions[] =
 	{
 		100.f, 100.f, 0.0f, 0.0f, // 0
-		100.f, 200.f, 1.0f, 0.0f, // 1
+		200.f, 100.f, 1.0f, 0.0f, // 1
 		200.f, 200.f, 1.0f, 1.0f, // 2
-		200.f, 100.f, 0.0f, 1.0f  // 3
+		100.f, 200.f, 0.0f, 1.0f  // 3
 	};
 
 	// Index buffer object specifying which vertex positions
@@ -84,12 +84,18 @@ int main(void)
 
 	IndexBuffer* ib				= new IndexBuffer(indicies, 6);
 
-	glm::mat4 projection		= glm::ortho(0.f, WindowWidth, 0.f, WindowHeight);
-	
+	constexpr auto view = glm::mat4(1.f);
+
+	glm::mat4 projectionMatrix	= glm::ortho(0.f, WindowWidth, 0.f, WindowHeight);
+	glm::mat4 viewMatrix		= glm::translate(view, glm::vec3(-100.f, 0.f, 0.f));
+	glm::mat4 modelMatrix		= glm::translate(view, glm::vec3(200, 200, 0));
+
+	glm::mat4 mvp = projectionMatrix * viewMatrix * modelMatrix;
+
 	Shader* shader				= new Shader("res/shaders/Basic.shader");
 	shader->Bind();
 	shader->SetUniform4f("u_Colour", 0.8f, 0.3f, 0.8f, 1.f);
-	shader->SetUniformMat4f("u_MVP", projection);
+	shader->SetUniformMat4f("u_MVP", mvp);
 
 	Texture* texture			= new Texture("res/textures/vine.png");
 	texture->Bind();
@@ -101,11 +107,12 @@ int main(void)
 	shader->Unbind();
 
 	Renderer* renderer			= new Renderer();
+	renderer->SetClearColour(0, 0, 1);
 
 	while (!glfwWindowShouldClose(window))
 	{
 		renderer->Clear();
-
+		
 		renderer->Draw(va, ib, shader);
 
 		glfwSwapBuffers(window);
