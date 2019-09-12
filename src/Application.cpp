@@ -17,6 +17,10 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+
 constexpr auto WindowTitle = "OpenGL Tutorials";
 constexpr auto WindowWidth  = 960.f;
 constexpr auto WindowHeight = 540.f;
@@ -57,10 +61,10 @@ int main(void)
 	// Vertex coordinates & Texture coordinates
 	float positions[] =
 	{
-		100.f, 100.f, 0.0f, 0.0f, // 0
-		200.f, 100.f, 1.0f, 0.0f, // 1
-		200.f, 200.f, 1.0f, 1.0f, // 2
-		100.f, 200.f, 0.0f, 1.0f  // 3
+		-50.f,	50.f, 0.0f, 0.0f,	// 0
+		 50.f, -50.f, 1.0f, 0.0f,	// 1
+		 50.f,  50.f, 1.0f, 1.0f,	// 2
+		-50.f,	50.f, 0.0f, 1.0f	// 3
 	};
 
 	// Index buffer object specifying which vertex positions
@@ -87,15 +91,13 @@ int main(void)
 	constexpr auto view = glm::mat4(1.f);
 
 	glm::mat4 projectionMatrix	= glm::ortho(0.f, WindowWidth, 0.f, WindowHeight);
-	glm::mat4 viewMatrix		= glm::translate(view, glm::vec3(-100.f, 0.f, 0.f));
-	glm::mat4 modelMatrix		= glm::translate(view, glm::vec3(200, 200, 0));
+	glm::mat4 viewMatrix		= glm::translate(view, glm::vec3(0.f, 0.f, 0.f));
+	glm::vec3 translationA		= glm::vec3(200, 200, 0);
+	glm::vec3 translationB		= glm::vec3(400, 300, 0);
 
-	glm::mat4 mvp = projectionMatrix * viewMatrix * modelMatrix;
-
-	Shader* shader				= new Shader("res/shaders/Basic.shader");
+	Shader* shader = new Shader("res/shaders/Basic.shader");
 	shader->Bind();
 	shader->SetUniform4f("u_Colour", 0.8f, 0.3f, 0.8f, 1.f);
-	shader->SetUniformMat4f("u_MVP", mvp);
 
 	Texture* texture			= new Texture("res/textures/vine.png");
 	texture->Bind();
@@ -109,11 +111,47 @@ int main(void)
 	Renderer* renderer			= new Renderer();
 	renderer->SetClearColour(0, 0, 1);
 
+	ImGui::CreateContext();
+	ImGui::StyleColorsDark();
+
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init();
+
+	glm::mat4 modelMatrix;
+	glm::mat4 mvp;
+
 	while (!glfwWindowShouldClose(window))
 	{
 		renderer->Clear();
 		
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		shader->Bind();
+		
+		// Translation A
+		modelMatrix = glm::translate(view, translationA);
+		mvp = projectionMatrix * viewMatrix * modelMatrix;
+		shader->SetUniformMat4f("u_MVP", mvp);
 		renderer->Draw(va, ib, shader);
+
+		// Translation B
+		modelMatrix = glm::translate(view, translationB);
+		mvp = projectionMatrix * viewMatrix * modelMatrix;
+		shader->SetUniformMat4f("u_MVP", mvp);
+		renderer->Draw(va, ib, shader);
+
+		ImGui::Begin("ImGui");
+
+		ImGui::SliderFloat3("Translation A", &translationA.x, 0.0f, WindowWidth);
+		ImGui::SliderFloat3("Translation B", &translationB.x, 0.0f, WindowWidth);
+
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::End();
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -126,6 +164,9 @@ int main(void)
 	delete shader;
 	delete texture;
 	delete renderer;
+
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
 	glfwTerminate();
 	return 0;
